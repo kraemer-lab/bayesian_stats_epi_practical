@@ -1,6 +1,6 @@
 <h1> Bayesian Stats in Epidemiology Practical </h1>
 
-<p> Here you will find the bayesian_stats_practical.Rmd file (R markdown file) containing the practical session with examples and few exercises. And all the data required is here as well </p>
+<p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and exercises. All the data required to run the practical are in this repository </p>
 
 <p> The maps used for this session should be credited to: https://github.com/epibayes/john-snow-data (Jon Zelner). </p>
 
