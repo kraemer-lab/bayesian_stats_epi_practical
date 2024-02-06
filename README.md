@@ -1,15 +1,24 @@
 <h1> Bayesian Stats in Epidemiology Practical </h1>
 
-<p>
-Here you will find the bayesian_stats_practical.Rmd file (R markdown file) containing the practical session with examples and few exercises. And all the data required is here as well.
+<p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and few exercises. All data required are here as well. </p>
 
 You can also find the slides from the introduction to the session (01_workflow_presentation.pptx).
 
+<h2> Setup </h2>
+In the Desktop or Documents directory of your computer open a <b>git bash</b> and run the command:
+
+<p>
+
+git clone https://github.com/kraemer-lab/bayesian_stats_epi_practical.git
+
 </p>
 
-<p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and exercises. All the data required to run the practical are in this repository </p>
+Alternatively, you can download the <b>data</b> folder and the <b>bayesian_stats_practical.Rmd</b> file manually into a properly named directory.
+
+Once you have everything downloaded, open the <b>bayesian_stats_practical.Rmd</b> file in R studio and begin your practical session.
 
 
+<h2> References </h2>
 <p> The maps used for this session should be credited to: https://github.com/epibayes/john-snow-data (Jon Zelner). </p>
 
 <p> The data used for this session should be credited to: https://geodacenter.github.io/data-and-lab/snow/ (Marcos Falcone, Julia Koschinsky, Peter Vinten-Johansen, Thomas Coleman, Luc Anselin). </p>
