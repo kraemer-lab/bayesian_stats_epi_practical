@@ -1,13 +1,12 @@
 <h1> Bayesian Stats in Epidemiology Practical </h1>
 
-<<<<<<< HEAD
 <p>
 Here you will find the bayesian_stats_practical.Rmd file (R markdown file) containing the practical session with examples and few exercises. And all the data required is here as well.
 
 You can also find the slides from the introduction to the session (01_workflow_presentation.pptx).
 
 </p>
-=======
+
 <p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and exercises. All the data required to run the practical are in this repository </p>
 >>>>>>> ae415d03aab5028ee26fae5ed1d4ed406b9d58d9
 
