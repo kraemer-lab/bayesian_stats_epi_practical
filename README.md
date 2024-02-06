@@ -8,7 +8,7 @@ You can also find the slides from the introduction to the session (01_workflow_p
 </p>
 
 <p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and exercises. All the data required to run the practical are in this repository </p>
->>>>>>> ae415d03aab5028ee26fae5ed1d4ed406b9d58d9
+
 
 <p> The maps used for this session should be credited to: https://github.com/epibayes/john-snow-data (Jon Zelner). </p>
 
