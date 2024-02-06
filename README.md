@@ -1,9 +1,30 @@
 <h1> Bayesian Stats in Epidemiology Practical </h1>
 
+<<<<<<< HEAD
+<p>
+Here you will find the bayesian_stats_practical.Rmd file (R markdown file) containing the practical session with examples and few exercises. And all the data required is here as well.
+
+You can also find the slides from the introduction to the session (01_workflow_presentation.pptx).
+
+</p>
+=======
 <p> In this repository you will find the bayesian_stats_practical.Rmd file (R markdown file) containing instructions for the practical session with examples and exercises. All the data required to run the practical are in this repository </p>
+>>>>>>> ae415d03aab5028ee26fae5ed1d4ed406b9d58d9
 
 <p> The maps used for this session should be credited to: https://github.com/epibayes/john-snow-data (Jon Zelner). </p>
 
 <p> The data used for this session should be credited to: https://geodacenter.github.io/data-and-lab/snow/ (Marcos Falcone, Julia Koschinsky, Peter Vinten-Johansen, Thomas Coleman, Luc Anselin). </p>
 
 <p> The essential R packages for running the statistical models should be credited to: https://github.com/rmcelreath/stat_rethinking_2023 (Richard McElreath) and https://mc-stan.org/ (Stan Development Team). </p>
+
+<h3>MIT License</h3>
+
+<p>
+Copyright (c) 2023 Kraemer Lab, University of Oxford.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</p>
