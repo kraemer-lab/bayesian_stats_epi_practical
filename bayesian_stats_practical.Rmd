@@ -62,14 +62,6 @@ legend("topright", legend=unique(chol_map_ordered$deaths), fill=color_palette, t
 dev.off()
 while (!is.null(dev.list()))  dev.off()
 
-```
-
-Below, try to plot the data on the modern map pf Soho (lodaded as os_map) on your own. You can also try changing color scales or playing with other features.
-
-```{r excersice 1, echo=FALSE}
-
-
-```
 
 Make sure that the data shows sensible values on the map, you should see the maximum value (15 cholera deaths) in the middle of Broad Street, near the pump.
 
