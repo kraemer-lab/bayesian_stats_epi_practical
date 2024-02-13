@@ -1,29 +1,13 @@
----
-title: "bayesian_stats_practical_12-02-2024"
-output: html_document
-date: "2024-02-02"
----
+install.packages("ggplot2")
+install.packages("raster")
+install.packages("sf")
+install.packages("tiff")
+install.packages("viridis")
+install.packages("devtools")
+install.packages("rstan")
+install.packages(c("coda","mvtnorm","devtools","loo","dagitty"))
+devtools::install_github("rmcelreath/rethinking@slim")
 
-## Bayesian Statistics Practical Session
-
-Practice by running the following code. First, you will have to install the required R packages. After loading the packages, you will be able to run code which compile and run three different models in a Bayesian workflow manner. Take some time to look through model summaries and plots to understand why the models might require improvement. At the end of the practical, after assessing the results of model comparison, think of how you could improve models inference and predictions.
-
-Un-comment and install packages below:
-```{r setup, include=FALSE}
-#install.packages("ggplot2")
-#install.packages("raster")
-#install.packages("sf")
-#install.packages("tiff")
-#install.packages("viridis")
-#install.packages("devtools")
-#install.packages("rstan")
-#install.packages(c("coda","mvtnorm","devtools","loo","dagitty"))
-#devtools::install_github("rmcelreath/rethinking@slim")
-```
-
-Make sure that all the packages have been installed successfully. Let's load them.
-
-```{r package loading, echo=FALSE}
 library(raster)
 library(sf)
 library(tiff)
@@ -31,21 +15,17 @@ library(viridis)
 library(rstan)
 library(rethinking)
 library(ggplot2)
-```
 
-If all packages have loaded properly, we can continue by loading the data. Make sure that all datasets have been properly loaded.
+# set your own working directory
 
-```{r data loading, echo=FALSE}
-chol_map <- read_sf("./data/buildings/deaths_by_bldg.shp")
-pump_map <- read_sf("./data/pumps/pumps.shp")
-snow_map <- brick('./data/SnowMap.tif')
-os_map <- brick('./data/OSMap_Grayscale.tif')
-os_map2 <- brick('./data/OSMap.tif')
-```
+setwd('/Users/mkraemer/Dropbox/Practical_2024-02-12/data')
 
-Before building up the models, let's assess the descriptive properties of the data by mapping it on John Snow's map.
+chol_map <- read_sf("buildings/deaths_by_bldg.shp")
+pump_map <- read_sf("pumps/pumps.shp")
+snow_map <- brick('SnowMap.tif')
+os_map <- brick('OSMap_Grayscale.tif')
+os_map2 <- brick('OSMap.tif')
 
-```{r plot descriptive, echo=FALSE}
 order_index <- order(chol_map$deaths)
 chol_map_ordered <- chol_map[order_index, ]
 
@@ -60,22 +40,14 @@ plotRGB(snow_map, interpolate=TRUE, maxpixels=500000000)
 points(chol_map_ordered$COORD_X, chol_map_ordered$COORD_Y, col=chol_map_ordered$deaths, pch=19)
 legend("topright", legend=unique(chol_map_ordered$deaths), fill=color_palette, title="Deaths")
 dev.off()
-while (!is.null(dev.list()))  dev.off()
 
-
-Make sure that the data shows sensible values on the map, you should see the maximum value (15 cholera deaths) in the middle of Broad Street, near the pump.
-
-If everything makes sense, we can continue by preparing the data for modelling:
-
-```{r prepare data, echo=FALSE}
 chol_map$pump_id <- as.character(chol_map$pumpID)
 
 chol_map$pump_idx <- as.numeric(factor(chol_map$pump_id, 
-                                      levels=unique(chol_map$pump_id)))
+                                       levels=unique(chol_map$pump_id)))
 deaths <- chol_map$deaths
 distance <- chol_map$distBSpump
 dz <- (distance - mean(distance)) / sd(distance) #standarised distance to improve sampling
-
 
 data <- list(
   y = deaths,#cholera death counts per building
@@ -85,17 +57,7 @@ data <- list(
 )
 
 data 
-```
 
-Make sure that all variables make sense and that the date list contains all the relevant variables.
-
-Now we build up the first model and plot prior predictive checks. The model below attempts to estimate the rate of deaths based on the proximity of pumps. Buildings within a certain area around a given pump [p] are indexed, pooled together. Try to write the mathematical formula of the model below on paper. Do the assumptions of this model make sense? Is it sufficient to answer our question and hypothesis?
-
-```{r build model 1, echo=FALSE}
-####################### Model 1 ########################
-#######################################################
-
-##Compute and plot prior predictive checks
 prior_model1 <- ulam(
   alist(
     ## this is the actual model
@@ -105,11 +67,7 @@ prior_model1 <- ulam(
     b[p] ~ normal(0 , 1 )
   ), data=data )
 
-```
 
-Sample the prior predictive distribution from the model.
-
-```{r sample priors model 1, echo=FALSE}
 prior <- extract.prior(prior_model1, n=1000, pars=c(y))
 
 y_ppc <- link(prior_model1, post=prior, data=data)
@@ -117,10 +75,7 @@ y_ppc <- link(prior_model1, post=prior, data=data)
 y_mean <- colMeans(y_ppc)
 
 y_lim = max(y_mean)
-```
 
-Plot prior predictive checks, do they look sensible?
-```{r plot prior predictive model 1, echo=FALSE}
 
 plt <- ggplot() +
   xlim(0, 30) +
@@ -148,11 +103,7 @@ plt <- plt + theme_bw()
 
 ggsave("model1_prior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
 
-```
 
-There is no need to worry about the warnings yet, as we are sampling from the prior only, which means that there are no data to be considered yet. In the following lines you can try sampling the model.
-
-```{r sampling model 1, echo=FALSE}
 ##sample model to get inference data (samples)
 samp_model1 <- ulam(
   alist(
@@ -165,11 +116,6 @@ samp_model1 <- ulam(
 
 #summary(samp_model1)
 
-```
-
-That's a long summary, but no need to read it in detail. The important thing to notice is that R_hats are close to 1 and effective sample sizes (n_eff) show high values (hopefully over 1000). Check the convergence plots (trace rank plots, or trankplots): Are chains well mixed? Did the sampling converge so we can get reliable inference?
-
-```{r summary and trankplots model 1, echo=FALSE}
 prec <- precis(samp_model1, depth=2, prob=0.9)
 prec <- data.frame(prec)
 write.csv(prec, "model1_summary.csv")
@@ -181,18 +127,11 @@ mtext("Model 1 trace rank plots", side=3, line=1, at=0.5, cex = 1.5, outer=TRUE)
 dev.off()
 while (!is.null(dev.list()))  dev.off()
 
-```
-
-We can also extract the posterior distributions.
-```{r extract posterior model 1, echo=FALSE}
 ##extract posterior predictive and plot
 post <- extract.samples(samp_model1, n=1000)
 y_pred <- link(samp_model1, post=post, data=data)
-```
 
-Finally, we can plot the posterior predictive distribution. Are predictions reasonable? 
 
-```{r plot posterior predictions model 1, echo=FALSE}
 plt <- ggplot() +
   xlim(0, 30) +
   ylim(0, 2) +
@@ -218,11 +157,8 @@ plt <- plt + scale_color_manual(name = "",
 plt <- plt + theme_bw() 
 
 ggsave("model1_Posterior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
-```
 
-Plotting predictions on the map could be a good idea. As these are predictions on the sampling data, they should approximate the original distribution. The map below shows that this is not the case. Maybe these could be improved with a better parametrisation or a different model.
 
-```{r posterior map model 1, echo=FALSE}
 ## plot posterior predictive mean on map
 chol_map$preds <- round(colMeans(y_pred), 1)
 order_index <- order(chol_map$preds)
@@ -237,13 +173,6 @@ points(chol_map_ordered$COORD_X, chol_map_ordered$COORD_Y, col=chol_map_ordered$
 legend("topright", legend=unique(chol_map_ordered$preds), fill=color_palette, title="Predicted Deaths")
 dev.off()
 while (!is.null(dev.list()))  dev.off()
-```
-
-One possible reparametrisation are hyperpriors. These are priors placed inside priors (that's why they are called hyper). For example: alpha ~ Normal(m, s), where m and s are also distributions, for instance m ~ Normal(0, 1) and s ~ exponential(1). Note that s must be constrained to the positve line, as it is a standard deviation parameter ("error" values cannot be negative).
-
-Try reparametrising the model below and sampling again (if too difficult, you can see Model 2 for an example). Has something improved? (try plotting in different ways).
-
-```{r exercise 2, echo=FALSE}
 
 ##sample model to get inference data (samples)
 samp_model1 <- ulam(
@@ -260,12 +189,6 @@ prec <- data.frame(prec)
 write.csv(prec, "model1_summary.csv")
 prec
 
-
-```
-
-We already hypothesised that the Broad Street pump might be contaminated. So maybe a better predictor of average death rate could be the distance from a building to Broad Street's pump.
-
-```{r build model 2, echo=FALSE}
 
 ####################### Model 2 ########################
 #######################################################
@@ -284,17 +207,10 @@ prior_model2 <- ulam(
     bs ~ exponential(1) #hyperpriors
   ), data=data )
 
-```
-
-Extract priors from model 2:
-```{r sample priors model 2, echo=FALSE}
 prior <- extract.prior(prior_model2, n=1000, pars=c(y))
 
 y_ppc <- link(prior_model2, post=prior, data=data)
-```
 
-Plot priors from model 2:
-```{r plot prior predictions model 2, echo=FALSE}
 plt <- ggplot() +
   xlim(0, 30) +
   ylim(0, 2) +
@@ -320,10 +236,7 @@ plt <- plt + scale_color_manual(name = "",
 plt <- plt + theme_bw() 
 
 ggsave("model2_prior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
-```
 
-Sample model 2:
-```{r sample model 2, echo=FALSE}
 ##sample model to get inference data (samples)
 samp_model2 <- ulam(
   alist(
@@ -338,10 +251,6 @@ samp_model2 <- ulam(
     bs ~ exponential(1) #hyperpriors
   ), data=data , chains=4 , log_lik=TRUE, iter=2000 )
 
-```
-
-Check up convergence of model 2:
-```{r summary and rankplots model 2, echo=FALSE}
 prec <- precis(samp_model2, depth=2, prob=0.9)
 prec <- data.frame(prec)
 write.csv(prec, "model2_summary.csv")
@@ -354,17 +263,12 @@ trankplot(samp_model2, n_cols=2, lwd=3)
 mtext("Model 2 trace rank plots", side=3, line=1, at=0.5, cex = 1.5, outer=TRUE)
 dev.off()
 while (!is.null(dev.list()))  dev.off()
-```
 
-Let's extract posterior predictives as well:
-```{r extract posterior predictive model 2, echo=FALSE}
+
 ##extract posterior predictive and plot
 post <- extract.samples(samp_model2, n=1000)
 y_pred <- link(samp_model2, post=post, data=data)
-```
 
-And plot them...
-```{r plot posterior predictives model 2 , echo=FALSE}
 plt <- ggplot() +
   xlim(0, 30) +
   ylim(0, 2) +
@@ -390,10 +294,7 @@ plt <- plt + scale_color_manual(name = "",
 plt <- plt + theme_bw() 
 
 ggsave("model2_Posterior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
-```
 
-And let's plot the means on the map as well:
-```{r plot on map model 2 , echo=FALSE}
 ## plot posterior predictive mean on map
 post <- extract.samples(samp_model2, n=1000)
 y_pred <- link(samp_model2, post=post, data=data)
@@ -411,13 +312,6 @@ legend("topright", legend=unique(chol_map_ordered$preds), fill=color_palette, ti
 dev.off()
 while (!is.null(dev.list()))  dev.off()
 
-```
-
-Do results make more sense now? Inference seems to be reasonable, but why is the model still so weak at predicting its own data? You can discuss this with classmates next to you.
-
-Maybe we need to add a parameter that accounts for buildings? After all, that seemed to be crucial information (though a bit redundant) to input in the simple model shown in the presentation. We will model this parameter as a[h] ~ Normal(cm, cs), where h is the index per building (we add the same index h to the slopes).
-
-```{r build model 3, echo=FALSE}
 ####################### Model 3 ########################
 #######################################################
 
@@ -434,15 +328,12 @@ prior_model3 <- ulam(
     bm ~ normal(0, 1), #hyperpriors
     bs ~ exponential(1) #hyperpriors
   ), data=data )
-```
 
-```{r sample prior model 3, echo=FALSE}
+
 prior <- extract.prior(prior_model3, n=1000, pars=c(y))
 
 y_ppc <- link(prior_model3, post=prior, data=data)
-```
 
-```{r plot prior predictive model 3, echo=FALSE}
 plt <- ggplot() +
   xlim(0, 30) +
   ylim(0, 2) +
@@ -468,9 +359,7 @@ plt <- plt + scale_color_manual(name = "",
 plt <- plt + theme_bw() 
 
 ggsave("model3_prior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
-```
 
-```{r sample model 3, echo=FALSE}
 
 ##sample model to get inference data (samples)
 samp_model3 <- ulam(
@@ -489,11 +378,7 @@ samp_model3 <- ulam(
 prec <- precis(samp_model3, depth=2, prob=0.9)
 prec <- data.frame(prec)
 write.csv(prec, "model3_summary.csv")
-```
 
-Ooops... chains are not mixing. Let's try a reparametrisation trick known as non-centered parametrisation. This usually works great for normal distributions, and it simply consists of making the distribution "linear" by separating location and scale parameters like this: a = az + as*al, where az ~ Normal(0,1)[h], as ~ exponential(1), al ~ Normal(0,1). 
-
-```{r sample non-centered model 3, echo=FALSE}
 
 ##sample model to get inference data (samples)
 samp_model3 <- ulam(
@@ -514,24 +399,18 @@ samp_model3 <- ulam(
 prec <- precis(samp_model3, depth=2, prob=0.9)
 prec <- data.frame(prec)
 write.csv(prec, "model3_summary.csv")
-```
 
-It worked! Let's see whether the trankplots and summary agree:
-```{r check convergence model 3, echo=FALSE}
 png(filename = "model3_trankplots.png", units = "in", width = 12, height = 5, res = 200)
 par(oma = c(0, 0, 3, 0))
 trankplot(samp_model3, n_cols=2, lwd=3)
 mtext("Model 3 trace rank plots", side=3, line=1, at=0.5, cex = 1.5, outer=TRUE)
 while (!is.null(dev.list()))  dev.off()
-```
 
-```{r extract posteriors model 3, echo=FALSE}
 ##extract posterior predictive and plot
 post <- extract.samples(samp_model3, n=1000)
 y_pred <- link(samp_model3, post=post, data=data)$lambda
-```
 
-```{r plot posterior predictive model 3, echo=FALSE}
+
 plt <- ggplot() +
   xlim(0, 30) +
   ylim(0, 2) +
@@ -558,11 +437,6 @@ plt <- plt + theme_bw()
 
 ggsave("model3_Posterior_predictives.png", plot = plt, width = 8, height = 8, dpi = 200, bg = NULL)
 
-```
-
-Do these results look more reasonable? Are the predictions translating better to the map?
-
-```{r plot predictions on map model 3, echo=FALSE}
 ## plot posterior predictive mean on map
 chol_map$preds <- round(colMeans(y_pred), 1)
 order_index <- order(chol_map$preds)
@@ -577,12 +451,4 @@ points(chol_map_ordered$COORD_X, chol_map_ordered$COORD_Y, col=chol_map_ordered$
 legend("topright", legend=unique(chol_map_ordered$preds), fill=color_palette, title="Predicted Deaths")
 dev.off()
 
-```
 
-
-Finally, as a bonus, you can try add all information into a single model. Namely, you could make the intercept to vary across pump sectors, e.g. a[p] ~ normal(am, as). Or maybe you could have a varying slope, e.g. b[p]*d . Try below:
-
-```{r excercise 3, echo=FALSE}
-
-
-```

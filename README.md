@@ -11,6 +11,8 @@ In the Desktop or Documents directory of your computer open a <b>git bash</b> an
 
 git clone https://github.com/kraemer-lab/bayesian_stats_epi_practical.git
 
+Alternatively download the data folder from here: https://www.dropbox.com/scl/fo/13g8cmo208oztjlnbelph/h?rlkey=k6rumw71olun000x73otaxtv7&dl=0; set your working directory to that data folder using setwd('') and use either R Markdown or R code.
+
 </p>
 
 Alternatively, you can download the <b>data</b> folder and the <b>bayesian_stats_practical.Rmd</b> file manually into a properly named directory.
